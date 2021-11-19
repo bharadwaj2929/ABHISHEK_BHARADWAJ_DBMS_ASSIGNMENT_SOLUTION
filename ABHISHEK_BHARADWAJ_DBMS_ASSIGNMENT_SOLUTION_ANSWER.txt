@@ -1,0 +1,96 @@
+create schema TravelOnTheGo;
+
+use TravelOnTheGo;
+
+--1)Creating 2 Tables PASSENGER & PRICE With Following Attributes & Properties
+
+create table PASSENGER(Passenger_name varchar(100),Category varchar(100),Gender varchar(1),Boarding_City varchar(100),Destination_City varchar(100),Distance int,Bus_Type varchar(100));
+create table PRICE(Bus_Type varchar(100),Distance int,Price int);
+
+--2)Inserting The Following Datas In The Tables
+
+insert into PASSENGER(Passenger_Name,Category,Gender,Boarding_City,Destination_City,Distance,Bus_Type) values('Sejal','AC','F','Bengaluru','Chennai',350,'Sleeper');
+insert into PASSENGER(Passenger_Name,Category,Gender,Boarding_City,Destination_City,Distance,Bus_Type) values('Anmol','Non-AC','M','Mumbai','Hyderabad',700,'Sitting');
+insert into PASSENGER(Passenger_Name,Category,Gender,Boarding_City,Destination_City,Distance,Bus_Type) values('Pallavi','AC','F','Panaji','Bengaluru',600,'Sleeper');
+insert into PASSENGER(Passenger_Name,Category,Gender,Boarding_City,Destination_City,Distance,Bus_Type) values('Khusboo','AC','F','Chennai','Mumbai',1500,'Sleeper');
+insert into PASSENGER(Passenger_Name,Category,Gender,Boarding_City,Destination_City,Distance,Bus_Type) values('Udit','Non-AC','M','Trivandrum','Panaji',1000,'Sleeper');
+insert into PASSENGER(Passenger_Name,Category,Gender,Boarding_City,Destination_City,Distance,Bus_Type) values('Ankur','AC','M','Nagpur','Hyderabad',500,'Sitting');
+insert into PASSENGER(Passenger_Name,Category,Gender,Boarding_City,Destination_City,Distance,Bus_Type) values('Hemant','Non-AC','M','Panaji','Mumbai',700,'Sleeper');
+insert into PASSENGER(Passenger_Name,Category,Gender,Boarding_City,Destination_City,Distance,Bus_Type) values('Manish','Non-AC','M','Hyderabad','Bengaluru',500,'Sitting');
+insert into PASSENGER(Passenger_Name,Category,Gender,Boarding_City,Destination_City,Distance,Bus_Type) values('Piyush','AC','M','Pune','Nagpur',700,'Sitting');
+
+insert into PRICE(Bus_Type,Distance,Price) values('Sleeper',350,770);
+insert into PRICE(Bus_Type,Distance,Price) values('Sleeper',500,1100);
+insert into PRICE(Bus_Type,Distance,Price) values('Sleeper',600,1320);
+insert into PRICE(Bus_Type,Distance,Price) values('Sleeper',700,1540);
+insert into PRICE(Bus_Type,Distance,Price) values('Sleeper',1000,2200);
+insert into PRICE(Bus_Type,Distance,Price) values('Sleeper',1200,2640);
+insert into PRICE(Bus_Type,Distance,Price) values('Sleeper',350,434);
+insert into PRICE(Bus_Type,Distance,Price) values('Sitting',500,620);
+insert into PRICE(Bus_Type,Distance,Price) values('Sitting',500,620);
+insert into PRICE(Bus_Type,Distance,Price) values('Sitting',600,744);
+insert into PRICE(Bus_Type,Distance,Price) values('Sitting',700,868);
+insert into PRICE(Bus_Type,Distance,Price) values('Sitting',1000,1240);
+insert into PRICE(Bus_Type,Distance,Price) values('Sitting',1200,1488);
+insert into PRICE(Bus_Type,Distance,Price) values('Sitting',1500,1860);
+
+--3)How Many Females & How Many Males Passengers Travelled For A Minimum Distance Of 600 Kilometers?
+
+select Gender, count(Gender) as Number_Of_Passengers
+from PASSENGER
+where Distance>=600 group by Gender;
+
+--4)Find The Minimum Ticket Price For Sleeper Bus.
+
+select min(Price) as Minimum_Ticket_Price_For_Sleeper_Bus
+from PRICE
+where Bus_Type='Sleeper';
+
+--5)Select Passengers Names Whose Names Starts With Character 'S'
+
+select Passenger_Name as Passengers_Names_Starts_With_Character_S
+from PASSENGER
+where Passenger_Name like '%S';
+
+--6)Calculate Prices Charged For Each Passengers Displaying Passenger_Name,Boarding_City,Destination_City,Bus_Type,Price In The Output
+
+select p.Passenger_Name,p.Boarding_City,p.Destination_City,p.Bus_Type,m.Price
+from PASSENGER p left join PRICE m on p.Distance=m.Distance and p.Bus_Type=m.Bus_Type
+order by p.Passenger_Name;
+
+--7)What Is The Passenger_Name & His/Her Ticket Price Who Travelled In Sitting Bus For A Distance Of 1000 Kilometers
+
+select a.Passenger_Name,a.Price as Ticket_Price 
+from (select p.Passenger_Name,p.Bus_Type,m.Price,p.Distance
+from PASSENGER p left join PRICE m on p.Distance=m.Distance and p.Bus_Type=m.Bus_Type) as p
+where a.Bus_Type='Sitting' and a.Distance=1000;
+
+--8)What'll Be The Sitting & Sleeper Bus Charges For Pallavi To Travel From Bengaluru To Panaji?
+
+select p.Passenger_Name,m.Bus_Type,m.Price as Sitting_And_Sleeper_Bus_Charges_From_Bengaluru_To_Panaji
+from PASSENGER p inner join PRICE m on p.Distance=m.Distance
+where p.Passenger_Name='Pallavi';
+
+--9)List The Distances From The "PASSENGER" Table Which're Unique(Non-Repeated Distances) In Descending_Order.
+
+select distinct Distance
+from PASSENGER
+order by Distance desc;
+
+--10)Display The Passenger_Name & % Of Distance_Travelled By That Passenger From The Total_Distance Travelled By All Passengers Without Using User_Variables
+
+select Passenger_Name,(Distance/(select sum(Distance) from PASSENGER))*100 as Percentage_Of_Distance_Travelled_By_Passenger_From_Total_Distance_Travelled_For_All_Passengers
+from PASSENGER;
+
+--11)Display The Distance,Price In 3 Categories In Table PRICE
+	--A)Expensive If The Cost Is More Than 1000
+	--B)Average_Cost If The Cost Is Less_Than 1000 & Greater_Than 500
+	--C)Cheap Otherwise
+
+select Distance,Price,
+case 
+when Price>1000 then 'Expensive'
+when Price>500 and Price<1000 then 'Average_Cost'
+else 'Cheap'
+end as Price_In_3_Categories_In_Table_PRICE
+from PRICE;       
